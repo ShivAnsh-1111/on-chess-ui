@@ -32,9 +32,9 @@ const ChessBoard = () => {
     setMessage("");
     setStart(true);
     alert('Game Started !!');
-    var url = 'http://localhost:8082/chess-game/games/start';
+    var url = 'https://chess-play-a5vm.onrender.com/chess-game/game/start';
     var payload = {
-      player1Id: '37' ,
+      player1Id: '1' ,
       player2Id: sessionStorage.getItem("uid"),
     };
     try {
@@ -48,11 +48,11 @@ const ChessBoard = () => {
       
   }
   const makeMove=async(move)=>{
-    var url = 'http://localhost:8082/chess-game/games/move';
+    var url = 'https://chess-play-a5vm.onrender.com/chess-game/game/move';
     var payload = {
       gameId:sessionStorage.getItem("gid"),
       move: move ,
-      player: sessionStorage.getItem("username"),
+      player: '1VS'+sessionStorage.getItem("uid"),
     };
   
     try {

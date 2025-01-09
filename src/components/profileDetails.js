@@ -9,7 +9,7 @@ const ProfileDetails = () => {
     
     var uid = sessionStorage.getItem("uid");
     try{
-    const url = "http://localhost:8081/chess-user/users/profile/"+uid;
+    const url = "https://chess-play-a5vm.onrender.com/chess-user/user/profile/"+uid;
     const response = await axios.get(url);
     console.log(response.data);
     sessionStorage.setItem("name",response.data.user.username);
@@ -55,7 +55,7 @@ const ProfileDetails = () => {
 
   const saveUserProfile=async()=> {
 
-    const url = 'http://localhost:8081/chess-user/users/profile/save';
+    const url = 'https://chess-play-a5vm.onrender.com/chess-user/user/profile/save';
 
     const payload = {
         name :editProfile.name,

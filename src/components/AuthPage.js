@@ -27,7 +27,7 @@ const Login = () => {
 
   const loginAct=async()=>{
 
-    const url = isSignUp ? 'http://localhost:8081/chess-user/users/register' : 'http://localhost:8081/chess-user/users/login';
+    const url = isSignUp ? 'https://chess-play-a5vm.onrender.com/chess-user/user/register' : 'https://chess-play-a5vm.onrender.com/chess-user/user/login';
 
     const payload = {
       username: username,

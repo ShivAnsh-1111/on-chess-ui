@@ -13,7 +13,7 @@ const App = () => {
 
   const confirmLogout= async()=>{
     var uid = sessionStorage.getItem("uid");
-    var url = 'http://localhost:8081/chess-user/users/logout/'+uid;
+    var url = 'https://chess-play-a5vm.onrender.com/chess-user/user/logout/'+uid;
     const response = await axios.get(url);
     console.log('Logout:',response.data);
   }
