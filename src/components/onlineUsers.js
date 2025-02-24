@@ -10,7 +10,7 @@ const OnlineUsers = () => {
   const getMembers= async()=>{
     
       try{
-        const url = "https://chess-play-a5vm.onrender.com/chess-user/user/online"
+        const url = "http://13.233.104.133:8888/chess-user/user/online"
         
         const response = await axios.get(url);
         console.log(response.data);
@@ -54,7 +54,7 @@ const OnlineUsers = () => {
       alert(`Reply sent to ${selectedUser.username}: ${message}`);
 
       try{
-        const url = "https://chess-play-a5vm.onrender.com/chess-user/user/email/send"
+        const url = "http://13.233.104.133:8888/chess-user/user/email/send"
         const payload = {
           sender: sessionStorage.getItem("username"),
           body: message,

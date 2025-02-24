@@ -32,7 +32,7 @@ const ChessBoard = () => {
     setMessage("");
     setStart(true);
     alert('Game Started !!');
-    var url = 'https://chess-play-a5vm.onrender.com/chess-game/game/start';
+    var url = 'http://13.233.104.133:8888/chess-game/game/start';
     var payload = {
       player1Id: '1' ,
       player2Id: sessionStorage.getItem("uid"),
@@ -48,7 +48,7 @@ const ChessBoard = () => {
       
   }
   const makeMove=async(move)=>{
-    var url = 'https://chess-play-a5vm.onrender.com/chess-game/game/move';
+    var url = 'http://13.233.104.133:8888/chess-game/game/move';
     var payload = {
       gameId:sessionStorage.getItem("gid"),
       move: move ,

@@ -15,7 +15,7 @@ const Inbox = () => {
     
     var username = sessionStorage.getItem("username");
     try{
-    const url = "https://chess-play-a5vm.onrender.com/chess-user/user/email/get/"+username;
+    const url = "http://13.233.104.133:8888/chess-user/user/email/get/"+username;
     console.log(url);
     const response = await axios.get(url);
     console.log(response.data);
@@ -52,7 +52,7 @@ const Inbox = () => {
     alert(`Reply sent to ${selectedEmail.sender}: ${reply}`);
 
     try{
-      const url = "https://chess-play-a5vm.onrender.com/chess-user/user/email/send"
+      const url = "http://13.233.104.133:8888/chess-user/user/email/send"
       const payload = {
         sender: sessionStorage.getItem("username"),
         body: reply,
