@@ -29,7 +29,7 @@ const Login = () => {
 
   const loginAct=async()=>{
 
-    const url = isSignUp ? '/chess-user/user/register' : '/chess-user/user/login';
+    const url = isSignUp ? apiUrl+'/chess-user/user/register' : apiUrl+'/chess-user/user/login';
 
     const payload = {
       username: username,
