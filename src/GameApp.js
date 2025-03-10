@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./ChessBoard.css";  // Ensure this CSS file is correct
 import axios from "axios";
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 // Initial chess board setup with pieces
 const initialBoard = [
   ["r", "n", "b", "q", "k", "b", "n", "r"],
@@ -32,7 +34,7 @@ const ChessBoard = () => {
     setMessage("");
     setStart(true);
     alert('Game Started !!');
-    var url = 'http://13.233.104.133:8888/chess-game/game/start';
+    var url = apiUrl+'/chess-game/game/start';
     var payload = {
       player1Id: '1' ,
       player2Id: sessionStorage.getItem("uid"),
@@ -48,7 +50,7 @@ const ChessBoard = () => {
       
   }
   const makeMove=async(move)=>{
-    var url = 'http://13.233.104.133:8888/chess-game/game/move';
+    var url = apiUrl+'/chess-game/game/move';
     var payload = {
       gameId:sessionStorage.getItem("gid"),
       move: move ,

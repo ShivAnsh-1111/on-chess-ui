@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 const OnlineUsers = () => {
 
   var mockMembers =[];
@@ -10,7 +12,7 @@ const OnlineUsers = () => {
   const getMembers= async()=>{
     
       try{
-        const url = "http://13.233.104.133:8888/chess-user/user/online"
+        const url = apiUrl+"/chess-user/user/online"
         
         const response = await axios.get(url);
         console.log(response.data);
@@ -54,7 +56,7 @@ const OnlineUsers = () => {
       alert(`Reply sent to ${selectedUser.username}: ${message}`);
 
       try{
-        const url = "http://13.233.104.133:8888/chess-user/user/email/send"
+        const url = apiUrl+"/chess-user/user/email/send"
         const payload = {
           sender: sessionStorage.getItem("username"),
           body: message,

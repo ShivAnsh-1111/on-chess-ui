@@ -4,6 +4,8 @@ import { initializeApp } from 'firebase/app';
 import { Routes, Route, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -27,7 +29,7 @@ const Login = () => {
 
   const loginAct=async()=>{
 
-    const url = isSignUp ? 'http://13.233.104.133:8888/chess-user/user/register' : 'http://13.233.104.133:8888/chess-user/user/login';
+    const url = isSignUp ? apiUrl+'/chess-user/user/register' : apiUrl+'/chess-user/user/login';
 
     const payload = {
       username: username,

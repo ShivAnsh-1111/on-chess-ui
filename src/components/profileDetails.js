@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from 'axios';
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 var count = true;
 const ProfileDetails = () => {
   // Mock data for user profile
@@ -9,7 +11,7 @@ const ProfileDetails = () => {
     
     var uid = sessionStorage.getItem("uid");
     try{
-    const url = "http://13.233.104.133:8888/chess-user/user/profile/"+uid;
+    const url = apiUrl+"/chess-user/user/profile/"+uid;
     const response = await axios.get(url);
     console.log(response.data);
     sessionStorage.setItem("name",response.data.user.username);
@@ -55,7 +57,7 @@ const ProfileDetails = () => {
 
   const saveUserProfile=async()=> {
 
-    const url = 'http://13.233.104.133:8888/chess-user/user/profile/save';
+    const url = apiUrl+'/chess-user/user/profile/save';
 
     const payload = {
         name :editProfile.name,

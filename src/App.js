@@ -9,11 +9,13 @@ import ProfileDetails from './components/profileDetails.js';
 import OnlineUsers from './components/onlineUsers.js';
 import GameApp from './GameApp.js';
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 const App = () => {
 
   const confirmLogout= async()=>{
     var uid = sessionStorage.getItem("uid");
-    var url = 'http://13.233.104.133:8888/chess-user/user/logout/'+uid;
+    var url = apiUrl + '/chess-user/user/logout/'+uid;
     const response = await axios.get(url);
     console.log('Logout:',response.data);
   }

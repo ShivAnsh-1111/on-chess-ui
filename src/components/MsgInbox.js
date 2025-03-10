@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
+const apiUrl = process.env.SERVICE_BASE_URL;
+
 var count = true;
 // Mock data for emails
 var mockEmails = [];
@@ -15,7 +17,7 @@ const Inbox = () => {
     
     var username = sessionStorage.getItem("username");
     try{
-    const url = "http://13.233.104.133:8888/chess-user/user/email/get/"+username;
+    const url = apiUrl+"/chess-user/user/email/get/"+username;
     console.log(url);
     const response = await axios.get(url);
     console.log(response.data);
@@ -52,7 +54,7 @@ const Inbox = () => {
     alert(`Reply sent to ${selectedEmail.sender}: ${reply}`);
 
     try{
-      const url = "http://13.233.104.133:8888/chess-user/user/email/send"
+      const url = apiUrl+"/chess-user/user/email/send"
       const payload = {
         sender: sessionStorage.getItem("username"),
         body: reply,
