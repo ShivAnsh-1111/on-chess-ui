@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ChessBoard.css";  // Ensure this CSS file is correct
 import axios from "axios";
 
-const apiUrl = process.env.SERVICE_BASE_URL;
+const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 // Initial chess board setup with pieces
 const initialBoard = [

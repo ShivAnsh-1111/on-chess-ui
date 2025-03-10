@@ -9,7 +9,7 @@ import ProfileDetails from './components/profileDetails.js';
 import OnlineUsers from './components/onlineUsers.js';
 import GameApp from './GameApp.js';
 
-const apiUrl = process.env.SERVICE_BASE_URL;
+const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 const App = () => {
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
-const apiUrl = process.env.SERVICE_BASE_URL;
+const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 var count = true;
 // Mock data for emails

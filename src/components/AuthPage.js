@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { Routes, Route, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-const apiUrl = process.env.SERVICE_BASE_URL;
+const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 // Firebase configuration
 const firebaseConfig = {
