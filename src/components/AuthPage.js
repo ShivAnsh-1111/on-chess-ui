@@ -47,7 +47,9 @@ const Login = () => {
             alert('Success! You are now signed in.');
             sessionStorage.setItem("uid",response.data[2]);
             sessionStorage.setItem("username",username);
+            sessionStorage.setItem("status", "loggedIn");
             gotToNewPage();
+
         } else {
             setIsSignUp(false);
             var res = response.data;
@@ -125,6 +127,7 @@ const Login = () => {
             style={{ width: '100%', padding: '8px', margin: '8px 0', boxSizing: 'border-box' }}
           />
         </div>
+        {isSignUp ?
         <div>
           <label>Email:</label>
           <input
@@ -133,8 +136,8 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', margin: '8px 0', boxSizing: 'border-box' }}
-          />
-        </div>
+          /> 
+        </div> : <div></div>}
         <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: 'blue', color: 'white', border: 'none', borderRadius: '4px' }}>
           {isSignUp ? 'Sign Up' : 'Sign In'}
         </button>

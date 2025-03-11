@@ -10,6 +10,7 @@ import OnlineUsers from './components/onlineUsers.js';
 import GameApp from './GameApp.js';
 
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
+const isLoggedIn = sessionStorage.getItem("status") == "loggedIn" ? true : false;
 
 const App = () => {
 
@@ -27,15 +28,16 @@ const App = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       // Clear user data (e.g., remove tokens or session info)
     confirmLogout();
+    sessionStorage.removeItem('status');
     localStorage.removeItem('authToken'); // Example: Remove token from localStorage
     sessionStorage.removeItem('userSession'); // Example: Clear session data
     window.location.href='/';
     }
   };
 
-  return (
+  return ( 
     <div className="app">
-      
+      { isLoggedIn ?
       <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "right" }}>
       <button
               onClick={handleLogout}
@@ -50,7 +52,7 @@ const App = () => {
             >
               Logout
             </button>
-      </div>
+      </div> : <div></div>}
 
       <BrowserRouter>
       <Routes>
