@@ -3,7 +3,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:4000");
+const socket = io("https://ui-server.vercel.app");
 
 const Game = () => {
   const [game, setGame] = useState(new Chess());

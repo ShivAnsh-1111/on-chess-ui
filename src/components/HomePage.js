@@ -3,87 +3,56 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const HomePage = () => {
-
-  const navigate = useNavigate()
-
-  const playChess=()=>{
-    navigate("/game");
-  }
-
+  const navigate = useNavigate();
+  const playChess = () => navigate("/game");
   const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
-  const confirmLogout= async()=>{
+  const confirmLogout = async () => {
     var uid = sessionStorage.getItem("uid");
-    var url = apiUrl + '/chess-user/user/logout/'+uid;
+    var url = apiUrl + '/chess-user/user/logout/' + uid;
     const response = await axios.get(url);
-    console.log('Logout:',response.data);
-  }
+    console.log('Logout:', response.data);
+  };
 
   const handleLogout = () => {
-  
-    // Redirect to login page
-    //navigate('/'); // Adjust the path as per your routing
     if (window.confirm('Are you sure you want to logout?')) {
-      // Clear user data (e.g., remove tokens or session info)
-    confirmLogout();
-    localStorage.removeItem('authToken'); // Example: Remove token from localStorage
-    sessionStorage.removeItem('userSession'); // Example: Clear session data
-    window.location.href='/';
+      confirmLogout();
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('userSession');
+      window.location.href = '/';
     }
   };
 
   return (
-    
     <div style={styles.container}>
-      
       {/* Header Section */}
       <header style={styles.header}>
         <h1 style={styles.title}>Welcome to Online Chess</h1>
-        <p style={styles.subtitle}>Learn -- Play -- Win -- Repeat </p>
-        <button onClick={playChess} style={styles.ctaButton}>New Game</button>
+        <p style={styles.subtitle}>Learn -- Play -- Win -- Repeat</p>
+        <div style={styles.ctaWrapper}>
+          <button onClick={playChess} style={styles.ctaButton}>New Game</button>
+        </div>
       </header>
-
-      <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "right" }}>
-      <button
-              onClick={handleLogout}
-              style={{
-                padding: "5px 10px",
-                backgroundColor: "#FAA011",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
+      
+      {/* Logout Button at Top Right */}
+      <div style={styles.logoutContainer}>
+        <button onClick={handleLogout} style={styles.logoutButton}>Logout</button>
       </div>
-
+      
       {/* Features Section */}
       <section style={styles.featuresSection}>
         <h2 style={styles.sectionTitle}>Features</h2>
-        <div style={styles.features}>
-          <div style={styles.feature}>
-          <a href='/profile'>User Profile</a>
-            <p>Check update your profile !!</p>
-          </div>
-          <div style={styles.feature}>
-            <a href='/inbox'>User Inbox</a>
-            <p>Connect with friends !!</p>
-          </div>
-          <div style={styles.feature}>
-          <a href='/users'>Online Users</a>
-            <p>Invite friends to play !!</p>
-          </div>
+        <div style={styles.featuresList}>
+          <div style={styles.feature}><a href='/profile'>User Profile</a><p>Check update your profile !!</p></div>
+          <div style={styles.feature}><a href='/inbox'>User Inbox</a><p>Connect with friends !!</p></div>
+          <div style={styles.feature}><a href='/users'>Online Users</a><p>Invite friends to play !!</p></div>
         </div>
       </section>
-
+      
       {/* About Section */}
       <section style={styles.aboutSection}>
         <h2 style={styles.sectionTitle}>About Us</h2>
-        <p>
-          We are dedicated to providing the best service to our customers. Learn more about our story and mission.
-        </p>
+        <p>We are dedicated to providing the best service to our customers. Learn more about our story and mission.</p>
       </section>
 
       {/* Footer Section */}
@@ -94,75 +63,88 @@ const HomePage = () => {
   );
 };
 
-
-// CSS-in-JS styling
 const styles = {
   container: {
     fontFamily: 'Arial, sans-serif',
-    lineHeight: '1.6',
-    margin: '0',
-    padding: '0',
-    color: '#333',
-    border: 'solid',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    overflow: 'hidden',
   },
   header: {
     backgroundColor: '#4CAF50',
     color: 'white',
-    padding: '20px 0',
     textAlign: 'center',
+    height: '18vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: '1vh',
   },
   title: {
-    fontSize: '2.5rem',
+    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
     margin: '0',
   },
   subtitle: {
-    fontSize: '1.2rem',
-    margin: '10px 0',
+    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+    margin: '0.5vh 0',
+  },
+  ctaWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
   },
   ctaButton: {
     backgroundColor: '#fff',
     color: '#4CAF50',
     border: 'none',
-    padding: '10px 20px',
+    padding: '8px 16px',
     fontSize: '1rem',
     cursor: 'pointer',
     borderRadius: '5px',
-    marginTop: '10px',
+    marginTop: '1vh',
+  },
+  logoutContainer: {
+    position: 'absolute',
+    top: '10px',
+    right: '20px',
+  },
+  logoutButton: {
+    padding: '5px 10px',
+    backgroundColor: '#FAA011',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
   },
   featuresSection: {
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    textAlign: 'center',
-  },
-  sectionTitle: {
-    fontSize: '2rem',
-    marginBottom: '10px',
-  },
-  features: {
     display: 'flex',
-    //justifyContent: 'space-around',
-    flexWrap: 'wrap',
     flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '2vh 5vw',
+  },
+  featuresList: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   feature: {
-    flex: '0 0 30%',
-    margin: '10px',
-    padding: '10px',
+    padding: '1.5vh',
     border: '1px solid #ddd',
-    borderRadius: '5px',
+    borderRadius: '1vw',
     backgroundColor: '#fff',
     textAlign: 'left',
+    width: '50%',
   },
   aboutSection: {
-    padding: '20px',
-    backgroundColor: '#fff',
     textAlign: 'center',
+    padding: '20px',
   },
   footer: {
     backgroundColor: '#333',
     color: 'white',
     textAlign: 'center',
-    padding: '10px 0',
+    padding: '1vh 0',
+    height: '7vh',
   },
 };
 
