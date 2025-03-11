@@ -5,7 +5,7 @@ import HomePage from './components/HomePage.js';
 import MsgInbox from './components/MsgInbox.js';
 import ProfileDetails from './components/profileDetails.js';
 import OnlineUsers from './components/onlineUsers.js';
-import GameApp from './GameApp.js';
+import GameApp from './components/game.js';
 
 const App = () => {
 
