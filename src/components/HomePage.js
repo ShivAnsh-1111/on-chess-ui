@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const HomePage = () => {
 
@@ -9,14 +10,54 @@ const HomePage = () => {
     navigate("/game");
   }
 
+  const apiUrl = process.env.REACT_APP_BACKEND_URL;
+
+  const confirmLogout= async()=>{
+    var uid = sessionStorage.getItem("uid");
+    var url = apiUrl + '/chess-user/user/logout/'+uid;
+    const response = await axios.get(url);
+    console.log('Logout:',response.data);
+  }
+
+  const handleLogout = () => {
+  
+    // Redirect to login page
+    //navigate('/'); // Adjust the path as per your routing
+    if (window.confirm('Are you sure you want to logout?')) {
+      // Clear user data (e.g., remove tokens or session info)
+    confirmLogout();
+    localStorage.removeItem('authToken'); // Example: Remove token from localStorage
+    sessionStorage.removeItem('userSession'); // Example: Clear session data
+    window.location.href='/';
+    }
+  };
+
   return (
+    
     <div style={styles.container}>
+      
       {/* Header Section */}
       <header style={styles.header}>
         <h1 style={styles.title}>Welcome to Online Chess</h1>
         <p style={styles.subtitle}>Learn -- Play -- Win -- Repeat </p>
         <button onClick={playChess} style={styles.ctaButton}>New Game</button>
       </header>
+
+      <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "right" }}>
+      <button
+              onClick={handleLogout}
+              style={{
+                padding: "5px 10px",
+                backgroundColor: "#FAA011",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
+      </div>
 
       {/* Features Section */}
       <section style={styles.featuresSection}>

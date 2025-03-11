@@ -1,7 +1,5 @@
 import React from 'react';
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import AuthPage from './components/AuthPage.js';
 import HomePage from './components/HomePage.js';
 import MsgInbox from './components/MsgInbox.js';
@@ -9,50 +7,10 @@ import ProfileDetails from './components/profileDetails.js';
 import OnlineUsers from './components/onlineUsers.js';
 import GameApp from './GameApp.js';
 
-const apiUrl = process.env.REACT_APP_BACKEND_URL;
-const isLoggedIn = sessionStorage.getItem("status") == "loggedIn" ? true : false;
-
 const App = () => {
-
-  const confirmLogout= async()=>{
-    var uid = sessionStorage.getItem("uid");
-    var url = apiUrl + '/chess-user/user/logout/'+uid;
-    const response = await axios.get(url);
-    console.log('Logout:',response.data);
-  }
-
-  const handleLogout = () => {
-  
-    // Redirect to login page
-    //navigate('/'); // Adjust the path as per your routing
-    if (window.confirm('Are you sure you want to logout?')) {
-      // Clear user data (e.g., remove tokens or session info)
-    confirmLogout();
-    sessionStorage.removeItem('status');
-    localStorage.removeItem('authToken'); // Example: Remove token from localStorage
-    sessionStorage.removeItem('userSession'); // Example: Clear session data
-    window.location.href='/';
-    }
-  };
 
   return ( 
     <div className="app">
-      { isLoggedIn ?
-      <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "right" }}>
-      <button
-              onClick={handleLogout}
-              style={{
-                padding: "5px 10px",
-                backgroundColor: "#FAA011",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
-      </div> : <div></div>}
 
       <BrowserRouter>
       <Routes>

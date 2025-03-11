@@ -47,7 +47,6 @@ const Login = () => {
             alert('Success! You are now signed in.');
             sessionStorage.setItem("uid",response.data[2]);
             sessionStorage.setItem("username",username);
-            sessionStorage.setItem("status", "loggedIn");
             gotToNewPage();
 
         } else {
