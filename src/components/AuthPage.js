@@ -44,9 +44,9 @@ const Login = () => {
         // Handle success
         if(!isSignUp){
             console.log('Success:', response.data);
-            console.log(response.data[2]);
+            console.log(response.data.userId);
             alert('Success! You are now signed in.');
-            sessionStorage.setItem("uid",response.data[2]);
+            sessionStorage.setItem("uid",response.data.userId);
             sessionStorage.setItem("username",username);
             gotToNewPage();
 
@@ -124,12 +124,12 @@ const Login = () => {
       username: sessionStorage.getItem("username"),
       email: sessionStorage.getItem("email"),
       password: "google",
-      loginData: sessionStorage.getItem("decode"),
+      loginData: sessionStorage.getItem("decoded"),
     }
     try {
       const response = await axios.post(url, payload);
 
-      sessionStorage.setItem("uid",response.data[2]);
+      sessionStorage.setItem("uid",response.data.userId);
       alert('Success! You are now signed in.');
       gotToNewPage();
 
