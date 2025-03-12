@@ -105,7 +105,7 @@ const Login = () => {
   const handleSuccess = (response) => {
     const token = response.credential;
     const decoded = jwtDecode(token); // Decode user details
-    //console.log("User Info:", decoded);
+    console.log("User Info:", decoded);
     sessionStorage.setItem("email",decoded.email);
     sessionStorage.setItem("username",decoded.name);
     sessionStorage.setItem("decoded",decoded);
@@ -128,7 +128,7 @@ const Login = () => {
     }
     try {
       const response = await axios.post(url, payload);
-
+      console.log(response.data);
       sessionStorage.setItem("uid",response.data.userId);
       alert('Success! You are now signed in.');
       gotToNewPage();

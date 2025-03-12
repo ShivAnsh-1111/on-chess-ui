@@ -17,8 +17,8 @@ const HomePage = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       confirmLogout();
-      localStorage.removeItem('authToken');
-      sessionStorage.removeItem('userSession');
+      localStorage.clear();
+      sessionStorage.clear();
       window.location.href = '/';
     }
   };
