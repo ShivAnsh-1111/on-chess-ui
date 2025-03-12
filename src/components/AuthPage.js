@@ -28,7 +28,6 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle between Sign In and Sign Up
   const [error, setError] = useState('');
 
-  sessionStorage.setItem(userData,{});
   const loginAct=async()=>{
 
     const url = isSignUp ? apiUrl+'/chess-user/user/register' : apiUrl+'/chess-user/user/login';
@@ -47,8 +46,8 @@ const Login = () => {
             console.log('Success:', response.data);
             console.log(response.data.userId);
             alert('Success! You are now signed in.');
-            sessionStorage.setItem(userData.uid,response.data.userId);
-            sessionStorage.setItem(userData.username,username);
+            sessionStorage.setItem("uid",response.data.userId);
+            sessionStorage.setItem("username",username);
             gotToNewPage();
 
         } else {
@@ -107,9 +106,9 @@ const Login = () => {
     const token = response.credential;
     const decoded = jwtDecode(token); // Decode user details
     //console.log("User Info:", decoded);
-    sessionStorage.setItem(userData.email,decoded.email);
-    sessionStorage.setItem(userData.username,decoded.name);
-    sessionStorage.setItem(userData.decoded,JSON.stringify(decoded));
+    sessionStorage.setItem("email",decoded.email);
+    sessionStorage.setItem("username",decoded.name);
+    sessionStorage.setItem("decoded",JSON.stringify(decoded));
     googleLogin();
   };
 
@@ -122,15 +121,15 @@ const Login = () => {
     const url = apiUrl+'/chess-user/user/register';
 
     const payload = {
-      username: sessionStorage.getItem(UserData.username),
-      email: sessionStorage.getItem(UserData.email),
+      username: sessionStorage.getItem("username"),
+      email: sessionStorage.getItem("email"),
       password: "google",
-      loginData: sessionStorage.getItem(userData.decoded),
+      loginData: sessionStorage.getItem("decoded"),
     }
     try {
       const response = await axios.post(url, payload);
       console.log(response.data);
-      sessionStorage.setItem(userData.uid,response.data.id);
+      sessionStorage.setItem("uid",response.data.id);
       alert('Success! You are now signed in.');
       gotToNewPage();
 

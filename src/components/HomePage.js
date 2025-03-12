@@ -8,7 +8,7 @@ const HomePage = () => {
   const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
   const confirmLogout = async () => {
-    var uid = sessionStorage.getItem(userData.uid);
+    var uid = sessionStorage.getItem("uid");
     var url = apiUrl + '/chess-user/user/logout/' + uid;
     const response = await axios.get(url);
     console.log('Logout:', response.data);
@@ -17,7 +17,6 @@ const HomePage = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       confirmLogout();
-      sessionStorage.removeItem(userData);
       localStorage.clear();
       sessionStorage.clear();
       window.location.href = '/';
@@ -28,7 +27,7 @@ const HomePage = () => {
     <div style={styles.container}>
       {/* Header Section */}
       <header style={styles.header}>
-        <h1 style={styles.title}>Welcome to Online Chess</h1>
+        <h1 style={styles.title}>Online Chess</h1>
         <p style={styles.subtitle}>Learn -- Play -- Win -- Repeat</p>
         <div style={styles.ctaWrapper}>
           <button onClick={playChess} style={styles.ctaButton}>New Game</button>
