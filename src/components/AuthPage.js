@@ -28,6 +28,7 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle between Sign In and Sign Up
   const [error, setError] = useState('');
 
+  sessionStorage.setItem(userData,{});
   const loginAct=async()=>{
 
     const url = isSignUp ? apiUrl+'/chess-user/user/register' : apiUrl+'/chess-user/user/login';
