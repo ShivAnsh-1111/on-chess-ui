@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from 'jwt-decode';
 import { Routes, Route, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+const clientId = process.env.REACT_APP_GCLIENT;
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 // Firebase configuration
@@ -17,8 +18,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+//const app = initializeApp(firebaseConfig);
+//const auth = getAuth(app);
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -101,9 +102,45 @@ const Login = () => {
     // }
   };
 
+  const handleSuccess = (response) => {
+    const token = response.credential;
+    const decoded = jwtDecode(token); // Decode user details
+    //console.log("User Info:", decoded);
+    sessionStorage.setItem("email",decoded.email);
+    sessionStorage.setItem("username",decoded.name);
+    sessionStorage.setItem("decoded",decoded);
+    googleLogin();
+  };
+
+  const handleFailure = () => {
+    console.log("Google Sign-In failed");
+  };
+
+  const googleLogin = async() => {
+    
+    const url = apiUrl+'/chess-user/user/register';
+
+    const payload = {
+      username: sessionStorage.getItem("username"),
+      email: sessionStorage.getItem("email"),
+      password: "google",
+      loginData: sessionStorage.getItem("decode"),
+    }
+    try {
+      const response = await axios.post(url, payload);
+
+      sessionStorage.setItem("uid",response.data[2]);
+      alert('Success! You are now signed in.');
+      gotToNewPage();
+
+    } catch(error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+    }
+  }
+
   return (
     <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
+      <h2>{isSignUp ? 'Work Sign Up' : 'Work Sign In'}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
@@ -142,12 +179,12 @@ const Login = () => {
         </button>
       </form>
       <p style={{ textAlign: 'center', margin: '10px 0' }}>or</p>
-      <button
-        onClick={handleGoogleSignIn}
-        style={{ width: '100%', padding: '10px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '4px' }}
-      >
-        Sign in with Google
-      </button>
+      <GoogleOAuthProvider clientId={clientId}>
+      <div>
+        <h2>Login with Google</h2>
+        <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
+      </div>
+    </GoogleOAuthProvider>
       <p style={{ textAlign: 'center', margin: '10px 0' }}>
         {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
         <button
