@@ -8,7 +8,7 @@ const HomePage = () => {
   const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
   const confirmLogout = async () => {
-    var uid = sessionStorage.getItem("uid");
+    var uid = sessionStorage.getItem(userData.uid);
     var url = apiUrl + '/chess-user/user/logout/' + uid;
     const response = await axios.get(url);
     console.log('Logout:', response.data);
@@ -17,6 +17,7 @@ const HomePage = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       confirmLogout();
+      sessionStorage.removeItem(userData);
       localStorage.clear();
       sessionStorage.clear();
       window.location.href = '/';

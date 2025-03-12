@@ -46,8 +46,8 @@ const Login = () => {
             console.log('Success:', response.data);
             console.log(response.data.userId);
             alert('Success! You are now signed in.');
-            sessionStorage.setItem("uid",response.data.userId);
-            sessionStorage.setItem("username",username);
+            sessionStorage.setItem(userData.uid,response.data.userId);
+            sessionStorage.setItem(userData.username,username);
             gotToNewPage();
 
         } else {
@@ -105,10 +105,10 @@ const Login = () => {
   const handleSuccess = (response) => {
     const token = response.credential;
     const decoded = jwtDecode(token); // Decode user details
-    console.log("User Info:", decoded);
-    sessionStorage.setItem("email",decoded.email);
-    sessionStorage.setItem("username",decoded.name);
-    sessionStorage.setItem("decoded",decoded);
+    //console.log("User Info:", decoded);
+    sessionStorage.setItem(userData.email,decoded.email);
+    sessionStorage.setItem(userData.username,decoded.name);
+    sessionStorage.setItem(userData.decoded,JSON.stringify(decoded));
     googleLogin();
   };
 
@@ -121,15 +121,15 @@ const Login = () => {
     const url = apiUrl+'/chess-user/user/register';
 
     const payload = {
-      username: sessionStorage.getItem("username"),
-      email: sessionStorage.getItem("email"),
+      username: sessionStorage.getItem(UserData.username),
+      email: sessionStorage.getItem(UserData.email),
       password: "google",
-      loginData: sessionStorage.getItem("decoded"),
+      loginData: sessionStorage.getItem(userData.decoded),
     }
     try {
       const response = await axios.post(url, payload);
       console.log(response.data);
-      sessionStorage.setItem("uid",response.data.userId);
+      sessionStorage.setItem(userData.uid,response.data.id);
       alert('Success! You are now signed in.');
       gotToNewPage();
 
