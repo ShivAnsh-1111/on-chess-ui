@@ -7,7 +7,7 @@ const Inbox = () => {
   const [emailThreads, setEmailThreads] = useState([]);
   const [selectedThread, setSelectedThread] = useState(null);
   const [reply, setReply] = useState("");
-  const [showReplyBox, setShowReplyBox] = useState(true); // State to control reply box visibility
+  const [showReplyBox, setShowReplyBox] = useState({}); // Track reply visibility per thread
 
   useEffect(() => {
     fetchEmails();
@@ -23,8 +23,8 @@ const Inbox = () => {
     }
   };
 
-  const handleReply = async () => {
-    if (!selectedThread || selectedThread.length === 0 || reply.trim() === "") return;
+  const handleReply = async (threadId) => {
+    if (!selectedThread || reply.trim() === "") return;
 
     const lastEmail = selectedThread[selectedThread.length - 1]; // Get the latest email safely
     if (!lastEmail || !lastEmail.sender) {
@@ -38,13 +38,18 @@ const Inbox = () => {
       subject: lastEmail.subject,
       recipient: lastEmail.sender,
       readCheck: false,
+      threadId: lastEmail.threadId, // Include threadId for proper grouping
     };
 
     try {
       await axios.post(`${apiUrl}/chess-user/user/email/send`, payload);
       alert(`Reply sent to ${lastEmail.sender}`);
       setReply(""); // Clear reply field
-      setShowReplyBox(false); // Hide reply box after sending
+
+      // Hide reply box after sending for this thread
+      setShowReplyBox({ ...showReplyBox, [threadId]: false });
+
+      fetchEmails(); // Refresh inbox after sending reply
     } catch (error) {
       console.error("Error sending reply:", error.response ? error.response.data : error.message);
     }
@@ -52,7 +57,7 @@ const Inbox = () => {
 
   return (
     <div style={{ display: "flex", height: "100vh", border: "solid" }}>
-      {/* Sidebar */}
+      {/* Sidebar - Email Threads List */}
       <div style={{ flex: 1, borderRight: "1px solid #ccc", overflowY: "auto" }}>
         <h2>Inbox</h2>
         {emailThreads.map((thread, index) => (
@@ -60,7 +65,7 @@ const Inbox = () => {
             key={index}
             onClick={() => {
               setSelectedThread(thread);
-              setShowReplyBox(true); // Show reply box when selecting a new thread
+              setShowReplyBox({ ...showReplyBox, [thread[0].threadId]: true }); // Show reply box for this thread
             }}
             style={{
               padding: "10px",
@@ -79,16 +84,20 @@ const Inbox = () => {
         {selectedThread ? (
           <>
             <h2>{selectedThread[0]?.subject || "No Subject"}</h2>
-            <p><strong>From:</strong> {selectedThread[0]?.sender || "Unknown"}</p>
+            <p><strong>Conversation:</strong></p>
 
-            {[...selectedThread].reverse().map((email) => (
-              <div key={email.id} style={{ marginBottom: "10px", padding: "10px", borderBottom: "1px solid #ccc" }}>
-                <p>{email.body}</p>
-              </div>
-            ))}
+            {/* Display all emails in the thread (oldest to newest) */}
+            {selectedThread
+              .sort((a, b) => new Date(a.createdTime) - new Date(b.createdTime))
+              .map((email) => (
+                <div key={email.id} style={{ marginBottom: "10px", padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  <p><strong>{email.sender}:</strong> {email.body}</p>
+                  <p style={{ fontSize: "12px", color: "gray" }}>{new Date(email.createdTime).toLocaleString()}</p>
+                </div>
+              ))}
 
             {/* Reply Section (Hidden after sending reply) */}
-            {showReplyBox && (
+            {showReplyBox[selectedThread[0].threadId] && (
               <>
                 <textarea
                   value={reply}
@@ -105,7 +114,7 @@ const Inbox = () => {
                 ></textarea>
 
                 <button
-                  onClick={handleReply}
+                  onClick={() => handleReply(selectedThread[0].threadId)}
                   style={{
                     marginTop: "10px",
                     padding: "10px 15px",
