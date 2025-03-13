@@ -137,37 +137,53 @@ const Inbox = () => {
 
       {/* Email Details */}
       <div style={{ flex: 2, padding: "20px" }}>
-      {selectedThread ? (
-        selectedThread.map((email, index) => (
-          <div key={email.id} style={{ marginBottom: "20px" }}>
-            <h2>{email.subject}</h2>
-            <p><strong>From:</strong> {email.sender}</p>
-            <p>{email.body}</p>
+        {selectedThread ? (
+          <>
+            {/* Show subject & sender only once at the top */}
+            <h2>{selectedThread[0].subject}</h2>
+            <p><strong>From:</strong> {selectedThread[0].sender}</p>
 
-            {/* Show Reply button only on the last email of the thread */}
-            {index === selectedThread.length - 1 && (
-              <button
-                onClick={() => handleReply(email)}
-                style={{
-                  marginTop: "10px",
-                  padding: "10px 15px",
-                  backgroundColor: "#007BFF",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Reply
-              </button>
-            )}
-          </div>
-        ))
-      ) : (
-        <p>Select a subject to view emails</p>
-      )}
-    </div>
+            {/* Reverse the order of messages */}
+            {[...selectedThread].reverse().map((email) => (
+              <div key={email.id} style={{ marginBottom: "10px", padding: "10px", borderBottom: "1px solid #ccc" }}>
+                <p>{email.body}</p>
+              </div>
+            ))}
 
+            {/* Reply Section */}
+            <textarea
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              placeholder="Type your reply..."
+              style={{
+                width: "100%",
+                height: "80px",
+                marginTop: "10px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            ></textarea>
+
+            <button
+              onClick={handleReply}
+              style={{
+                marginTop: "10px",
+                padding: "10px 15px",
+                backgroundColor: "#007BFF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Reply
+            </button>
+          </>
+        ) : (
+          <p>Select a subject to view emails</p>
+        )}
+      </div>
     </div>
     
   );
