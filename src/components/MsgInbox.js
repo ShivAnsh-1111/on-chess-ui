@@ -15,14 +15,17 @@ const Inbox = () => {
 
   const userEmails=async()=> {
     
-    var username = sessionStorage.getItem("username");
+    var uid = sessionStorage.getItem("uid");
     try{
-    const url = apiUrl+"/chess-user/user/email/get/"+username;
+    const url = apiUrl+"/chess-user/user/email/get/"+uid;
     console.log(url);
     const response = await axios.get(url);
     console.log(response.data);
-    
-    mockEmails = response.data;
+
+    // Flatten the list of lists into a single list
+    const flattenedEmails = response.data.flat();
+
+    mockEmails = flattenedEmails;
     } catch(error){
       console.error('Error:', error.response ? error.response.data : error.message);
     }
