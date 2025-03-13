@@ -24,6 +24,9 @@ const Inbox = () => {
   };
 
   const handleReply = async (threadId) => {
+    console.log("threadId "+threadId);
+    console.log("email threadId "+lastEmail.threadId);
+    console.log("email id "+lastEmail.id);
     if (!selectedThread || reply.trim() === "") return;
 
     const lastEmail = selectedThread[selectedThread.length - 1]; // Get the latest email safely
@@ -39,6 +42,7 @@ const Inbox = () => {
       recipient: lastEmail.sender,
       readCheck: false,
       threadId: lastEmail.threadId, // Include threadId for proper grouping
+      inReplyTo: lastEmail.id,
     };
 
     try {
