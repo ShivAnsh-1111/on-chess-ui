@@ -13,6 +13,10 @@ const Inbox = () => {
   const [reply, setReply] = useState("");
   const [isReplying, setIsReplying] = useState(false);
 
+  const [emailThreads, setEmailThreads] = useState([]); // Holds all email threads
+  const [selectedThread, setSelectedThread] = useState(null); // Holds currently selected thread
+
+
   const userEmails=async()=> {
     
     var uid = sessionStorage.getItem("uid");
@@ -36,6 +40,22 @@ const Inbox = () => {
     // Simulating a fetch request
     setEmails(mockEmails);
   }, []);
+
+  useEffect(() => {
+    fetchEmails();
+  }, []);
+
+  const fetchEmails = async () => {
+    var uid = sessionStorage.getItem("uid");
+    try {
+      const url = apiUrl + "/chess-user/user/email/get/" + uid;
+      const response = await axios.get(url);
+      
+      setEmailThreads(response.data); // Store email threads directly
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    }
+  };
 
   const markAsRead = (id) => {
     setEmails((prevEmails) =>
@@ -83,22 +103,22 @@ const Inbox = () => {
       {/* Sidebar */}
       <div style={{ flex: 1, borderRight: "1px solid #ccc", overflowY: "auto" }}>
         <h2>Inbox</h2>
-        {emails.map((email) => (
+        {emailThreads.map((thread, index) => (
           <div
-            key={email.id}
-            onClick={() => handleEmailClick(email)}
+            key={index}
+            onClick={() => setSelectedThread(thread)}
             style={{
               padding: "10px",
               cursor: "pointer",
-              backgroundColor: email.read ? "#f9f9f9" : "#e8f5e9",
+              backgroundColor: selectedThread === thread ? "#e8f5e9" : "white",
               borderBottom: "1px solid #ccc",
             }}
           >
-            <strong>{email.sender}</strong>
-            <p>{email.subject}</p>
+            <strong>{thread[0].subject}</strong> {/* Show subject from the first email of the thread */}
           </div>
         ))}
       </div>
+
       <div>
       <button
               onClick={userEmails}
@@ -117,68 +137,37 @@ const Inbox = () => {
 
       {/* Email Details */}
       <div style={{ flex: 2, padding: "20px" }}>
-        {selectedEmail ? (
-          <>
-            <h2>{selectedEmail.subject}</h2>
-            <p>
-              <strong>From:</strong> {selectedEmail.sender}
-            </p>
-            <p>{selectedEmail.body}</p>
+      {selectedThread ? (
+        selectedThread.map((email, index) => (
+          <div key={email.id} style={{ marginBottom: "20px" }}>
+            <h2>{email.subject}</h2>
+            <p><strong>From:</strong> {email.sender}</p>
+            <p>{email.body}</p>
 
-            {/* Reply Button */}
-            <button
-              onClick={() => setIsReplying((prev) => !prev)}
-              style={{
-                marginTop: "10px",
-                padding: "10px 15px",
-                backgroundColor: "#007BFF",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              {isReplying ? "Cancel Reply" : "Reply"}
-            </button>
-
-            {/* Reply Text Area */}
-            {isReplying && (
-              <div style={{ marginTop: "20px" }}>
-                <textarea
-                  rows="4"
-                  cols="50"
-                  value={reply}
-                  onChange={(e) => setReply(e.target.value)}
-                  placeholder="Write your reply here..."
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-                <button
-                  onClick={handleReply}
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 15px",
-                    backgroundColor: "#28a745",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  disabled={!reply.trim()}
-                >
-                  Send Reply
-                </button>
-              </div>
+            {/* Show Reply button only on the last email of the thread */}
+            {index === selectedThread.length - 1 && (
+              <button
+                onClick={() => handleReply(email)}
+                style={{
+                  marginTop: "10px",
+                  padding: "10px 15px",
+                  backgroundColor: "#007BFF",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Reply
+              </button>
             )}
-          </>
-        ) : (
-          <p>Select an email to view details</p>
-        )}
-      </div>
+          </div>
+        ))
+      ) : (
+        <p>Select a subject to view emails</p>
+      )}
+    </div>
+
     </div>
     
   );
