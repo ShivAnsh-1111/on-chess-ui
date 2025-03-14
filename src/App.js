@@ -6,6 +6,15 @@ import MsgInbox from './components/MsgInbox.js';
 import ProfileDetails from './components/profileDetails.js';
 import OnlineUsers from './components/onlineUsers.js';
 import GameApp from './components/game.js';
+import { Navigate, Outlet } from "react-router-dom";
+
+const ProtectedRoute = ({ isAuthenticated }) => {
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+};
+
+const isLoggedIn = () => {
+
+}
 
 const App = () => {
 
@@ -14,12 +23,23 @@ const App = () => {
 
       <BrowserRouter>
       <Routes>
-          <Route path="/" element={<AuthPage/>}/>
-          <Route path="/homepage" element={<HomePage/>}/>
-          <Route path="/inbox" element={<MsgInbox/>}/>
-          <Route path="/profile" element={<ProfileDetails/>}/>
-          <Route path="/users" element={<OnlineUsers/>}/>
-          <Route path="/game" element={<GameApp />}/>
+          <Route path="/" element={<AuthPage />} />
+
+          <Route path="/homepage" element={<ProtectedRoute  isAuthenticated={isLoggedIn}/>}>
+            <Route path="" element={<HomePage />} />
+          </Route>
+          <Route path="/inbox" element={<ProtectedRoute  isAuthenticated={isLoggedIn}/>}>
+            <Route path="" element={<MsgInbox />} />
+          </Route>
+          <Route path="/profile" element={<ProtectedRoute  isAuthenticated={isLoggedIn}/>}>
+            <Route path="" element={<ProfileDetails />} />
+          </Route>
+          <Route path="/users" element={<ProtectedRoute  isAuthenticated={isLoggedIn}/>}>
+            <Route path="" element={<OnlineUsers />} />
+          </Route>
+          <Route path="/game" element={<ProtectedRoute  isAuthenticated={isLoggedIn} />}>
+            <Route path="" element={<GameApp />} />
+          </Route>
       </Routes>
       </BrowserRouter>
 

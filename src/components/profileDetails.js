@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import {React, useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 var count = true;
 const ProfileDetails = () => {
+
+  const navigate = useNavigate();
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated"); // Example: Check auth token
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
   // Mock data for user profile
 
   const userProfile=async()=> {

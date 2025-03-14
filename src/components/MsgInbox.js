@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
+
+
 
 const Inbox = () => {
   const [emailThreads, setEmailThreads] = useState([]);
   const [selectedThread, setSelectedThread] = useState(null);
   const [reply, setReply] = useState("");
   const [showReplyBox, setShowReplyBox] = useState({}); // Track reply visibility per thread
+
+  const navigate = useNavigate();
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated"); // Example: Check auth token
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     fetchEmails();

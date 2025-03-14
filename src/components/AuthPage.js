@@ -48,6 +48,7 @@ const Login = () => {
             alert('Success! You are now signed in.');
             sessionStorage.setItem("uid",response.data.userId);
             sessionStorage.setItem("username",username);
+            sessionStorage.setItem("isAuthenticated", true);
             gotToNewPage();
 
         } else {
@@ -129,6 +130,7 @@ const Login = () => {
     try {
       const response = await axios.post(url, payload);
       console.log(response.data);
+      sessionStorage.setItem("isAuthenticated", true);
       sessionStorage.setItem("uid",response.data.id);
       alert('Success! You are now signed in.');
       gotToNewPage();

@@ -1,4 +1,4 @@
-import React from 'react';
+import {React, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,6 +6,14 @@ const HomePage = () => {
   const navigate = useNavigate();
   const playChess = () => navigate("/game");
   const apiUrl = process.env.REACT_APP_BACKEND_URL;
+
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated"); // Example: Check auth token
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const confirmLogout = async () => {
     var uid = sessionStorage.getItem("uid");
@@ -17,6 +25,7 @@ const HomePage = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       confirmLogout();
+      sessionStorage.setItem("isAuthenticated", false);
       localStorage.clear();
       sessionStorage.clear();
       window.location.href = '/';

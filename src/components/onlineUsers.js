@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import {React, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
+
 const OnlineUsers = () => {
+
+  const navigate = useNavigate();
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated"); // Example: Check auth token
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   var mockMembers =[];
 
@@ -32,6 +43,12 @@ const OnlineUsers = () => {
   const [subject, setSubject] = useState('');
   const [sentMessages, setSentMessages] = useState([]); // Track sent messages
 
+  const sendGameRequest = (user) => {
+    
+    sessionStorage.setItem("Player2",user.username);
+    navigate("/game");
+
+  }
   // Handle selecting a user to reply to
   const handleSelectUser = (user) => {
     setSelectedUser(user);
@@ -116,7 +133,7 @@ const OnlineUsers = () => {
                 borderRadius: "5px",
                 cursor: "pointer",
               }}
-              onClick={() => handleSelectUser(user)}>Game Request</button></div>}
+              onClick={() => sendGameRequest(user)}>Game Request</button></div>}
           </li>
           
         ))}
