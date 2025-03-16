@@ -1,98 +1,152 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import { useNavigate } from "react-router-dom";
-import io from "socket.io-client";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import axios from "axios";
 
-const socket = io("https://ui-server.vercel.app");
+const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
 const Game = () => {
-  const navigate = useNavigate();
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    const navigate = useNavigate();
+    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    
+    useEffect(() => {
+      if (!isAuthenticated) {
+        navigate("/");
+      }
+    }, [isAuthenticated, navigate]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
+    const [game, setGame] = useState(new Chess());
+    const [fen, setFen] = useState("start");
+    const [isWhiteTurn, setIsWhiteTurn] = useState(true);
+    const [whiteTime, setWhiteTime] = useState(600);
+    const [blackTime, setBlackTime] = useState(600);
+    const [isGameStarted, setIsGameStarted] = useState(false);
+    const [boardSize, setBoardSize] = useState(window.innerWidth * 0.5);
+    const [client, setClient] = useState(null);
 
-  const [game, setGame] = useState(new Chess());
-  const [fen, setFen] = useState("start");
-  const [isWhiteTurn, setIsWhiteTurn] = useState(true);
-  const [whiteTime, setWhiteTime] = useState(600);
-  const [blackTime, setBlackTime] = useState(600);
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [boardSize, setBoardSize] = useState(window.innerWidth * 0.5);
+    const playerWhite = sessionStorage.getItem("username") || "Player 1";
+    const playerBlack = sessionStorage.getItem("Player2") || "Player 2";
 
-  const playerWhite = sessionStorage.getItem("username") || "Player 1";
-  const playerBlack = sessionStorage.getItem("Player2") || "Player 2";
-
-  useEffect(() => {
-    socket.on("move", (move) => {
-      console.log("Received move from server:", move);
+    const startGame = async () => {
+      //setBoard(initialBoard);
+      //setSelectedSquare(null);
+      //setMessage("");
+      //setStart(true);
+      setIsGameStarted(true)
+      alert("Game Started !!");
+      var url = apiUrl + "/chess-game/game/start";
+      var payload = {
+        player1Id: sessionStorage.getItem("uid"),
+        player2Id: "1",
+      };
       try {
-        const updatedGame = new Chess(game.fen());
-        if (updatedGame.move(move)) {
-          setGame(updatedGame);
-          setFen(updatedGame.fen());
-          setIsWhiteTurn(!isWhiteTurn);
-        }
+        const response = await axios.post(url, payload);
+        sessionStorage.setItem("gid", response.data.id);
       } catch (error) {
-        console.error("Error processing move:", error);
+        console.error("Error:", error.response ? error.response.data : error.message);
       }
-    });
-
-    return () => socket.off("move");
-  }, [game]);
-
-  useEffect(() => {
-    if (!isGameStarted) return;
-
-    const timer = setInterval(() => {
-      if (isWhiteTurn) {
-        setWhiteTime((prev) => Math.max(prev - 1, 0));
-      } else {
-        setBlackTime((prev) => Math.max(prev - 1, 0));
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isWhiteTurn, isGameStarted]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setBoardSize(Math.min(window.innerWidth * 0.75, 500)); // Responsive sizing
+      console.log("gid: ",sessionStorage.getItem("gid"));
     };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    // 🔹 Initialize WebSocket with SockJS
+    useEffect(() => {
+        const socket = new SockJS("https://onchess.duckdns.org/");
+        const stompClient = new Client({
+            webSocketFactory: () => socket,
+            debug: (str) => console.log(str),
+            reconnectDelay: 5000, // Auto-reconnect
+        });
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
+        stompClient.onConnect = () => {
+            console.log("✅ Connected to WebSocket");
 
-  const handleMove = (sourceSquare, targetSquare) => {
-    if (!isGameStarted) return false;
+            // Subscribe to game moves
+            stompClient.subscribe("/topic/game", (message) => {
+                const move = JSON.parse(message.body);
+                console.log("📩 Received move:", move);
 
-    const move = { from: sourceSquare, to: targetSquare };
-    try {
-      const updatedGame = new Chess(game.fen());
-      if (updatedGame.move(move)) {
-        socket.emit("move", move);
-        setGame(updatedGame);
-        setFen(updatedGame.fen());
-        setIsWhiteTurn(!isWhiteTurn);
-        return true;
-      }
-    } catch (error) {
-      console.error("Error making move:", error);
-    }
-    return false;
-  };
+                const updatedGame = new Chess(game.fen());
+                if (updatedGame.move(move)) {
+                    setGame(updatedGame);
+                    setFen(updatedGame.fen());
+                    setIsWhiteTurn((prev) => !prev);
+                }
+            });
+
+            // Notify backend that a player has joined
+            stompClient.publish({
+                destination: "/app/game.join",
+                body: JSON.stringify({ player: playerWhite }),
+            });
+        };
+
+        stompClient.activate();
+        setClient(stompClient);
+
+        return () => stompClient.deactivate();
+    }, []);
+
+    // ⏳ Handle game timer
+    useEffect(() => {
+      if (!isGameStarted) return;
+
+      const timer = setInterval(() => {
+        setWhiteTime((prev) => (isWhiteTurn ? Math.max(prev - 1, 0) : prev));
+        setBlackTime((prev) => (!isWhiteTurn ? Math.max(prev - 1, 0) : prev));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }, [isWhiteTurn, isGameStarted]);
+
+    // 🎯 Resize board dynamically
+    useEffect(() => {
+      const handleResize = () => {
+        setBoardSize(Math.min(window.innerWidth * 0.75, 500));
+      };
+
+      window.addEventListener("resize", handleResize);
+      handleResize();
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // ⏳ Format timer display
+    const formatTime = (time) => {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    };
+
+    // ♟ Handle piece movement
+    const handleMove = (sourceSquare, targetSquare) => {
+        if (!isGameStarted) return false;
+        
+        const move = { from: sourceSquare, to: targetSquare };
+
+        try {
+            const updatedGame = new Chess(game.fen());
+            if (updatedGame.move(move)) {
+                if (client && client.connected) {
+                    client.publish({
+                        destination: "/app/move",
+                        body: JSON.stringify(move),
+                    });
+                } else {
+                    console.warn("⚠️ STOMP Client not connected.");
+                }
+
+                setGame(updatedGame);
+                setFen(updatedGame.fen());
+                setIsWhiteTurn(!isWhiteTurn);
+                return true;
+            }
+        } catch (error) {
+            console.error("❌ Error making move:", error);
+        }
+        return false;
+    };
 
   return (
     <div style={styles.container}>
@@ -117,7 +171,7 @@ const Game = () => {
       </div>
 
       {!isGameStarted && (
-        <button style={styles.startButton} onClick={() => setIsGameStarted(true)}>
+        <button style={styles.startButton} onClick={startGame}>
           Start Game
         </button>
       )}
@@ -125,7 +179,7 @@ const Game = () => {
   );
 };
 
-// Inline styles
+// 🎨 Styles
 const styles = {
   container: {
     textAlign: "center",
@@ -150,10 +204,10 @@ const styles = {
     borderRadius: "8px",
     width: "150px",
     height: "50px",
-    display: "flex", 
-    flexDirection: "column", // Stack name & time
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
     fontSize: "10px",
     textAlign: "center",
     fontFamily: "system-ui",
@@ -170,10 +224,10 @@ const styles = {
     borderRadius: "8px",
     width: "150px",
     height: "50px",
-    display: "flex", 
-    flexDirection: "column", // Stack name & time
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
     fontSize: "10px",
     textAlign: "center",
     fontFamily: "system-ui",
@@ -189,9 +243,5 @@ const styles = {
     marginTop: "20px",
   },
 };
-
-socket.on("connect", () => {
-  console.log("Connected to server");
-});
 
 export default Game;
