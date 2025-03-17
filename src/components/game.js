@@ -7,6 +7,7 @@ import { Client } from "@stomp/stompjs";
 import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_BACKEND_URL;
+const wsUrl = process.env.REACT_APP_WS_URL;
 
 const Game = () => {
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ const Game = () => {
 
     // 🔹 Initialize WebSocket with SockJS
     useEffect(() => {
-        const socket = new SockJS("https://onchess.duckdns.org/");
+        const socket = new SockJS(wsUrl);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),
